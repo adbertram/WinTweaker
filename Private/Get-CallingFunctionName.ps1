@@ -5,10 +5,10 @@ function Get-CallingFunctionName {
     (
         [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.CallStackFrame]$CallStack
+        [System.Management.Automation.CallStackFrame[]]$CallStack
     )
 
     $ErrorActionPreference = 'Stop'
 
-    $CallStack[0].Command
+    $CallStack[1].Command
 }

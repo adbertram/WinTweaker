@@ -3,8 +3,10 @@ function Start-Tweak {
     param
     (
         [Parameter()]
-        [ValidateNotNullOrEmpty()]
         [string[]]$ComputerName,
+
+        [Parameter()]
+        [pscredential]$Credential,
 
         [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
@@ -12,7 +14,10 @@ function Start-Tweak {
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
-        [switch]$Asynchronous
+        [switch]$Asynchronous,
+
+        [Parameter()]
+        [object[]]$Arguments
     )
 
     $ErrorActionPreference = 'Stop'
@@ -20,13 +25,25 @@ function Start-Tweak {
     Write-Verbose -Message "Running tweak $(Get-CallingFunctionName -CallStack (Get-PSCallStack))..."
 
     $icmParams = @{
-        ComputerName = $ComputerName
-        ScriptBlock  = $Code
+        ScriptBlock = $Code
     }
+
+    if (-not $ComputerName) {
+        $ComputerName = $env:COMPUTERNAME
+    }
+    $icmParams.ComputerName = $ComputerName
+
     if (-not $Asynchronous.IsPresent) {
         $icmParams.AsJob = $true
     }
 
+    if ($Credential) {
+        $icmParams.Credential = $Credential
+    }
+
+    if ($Arguments) {
+        $icmParams.ArgumentList = $Arguments
+    }
+
     Invoke-Command @icmParams
-    
 }

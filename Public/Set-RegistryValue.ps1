@@ -26,29 +26,37 @@ function Set-RegistryValue {
         [Parameter()]
         [ValidateSet('Binary', 'DWord', 'ExpandString', 'MultiString', 'QWord', 'String')]
         [ValidateNotNullOrEmpty()]
-        [string]$Type
+        [string]$Type,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [switch]$Asynchronous
     )
 
     $ErrorActionPreference = 'Stop'
 
-    if (-not $PSBoundParameters.ContainsKey('ComputerName')) {
-        $ComputerName = $env:COMPUTERNAME
-    }
-
     $code = {
-        if (-not (Test-Path -Path $KeyPath)) {
-            $null = New-Item -Path $KeyPath -Force
+        if (-not (Test-Path -Path $args[0])) {
+            $null = New-Item -Path $args[0] -Force
         }
         $setParams = @{
-            Path  = $KeyPath
-            Name  = $Name
-            Value = $Value
+            Path  = $args[0]
+            Name  = $args[1]
+            Value = $args[2]
         }
-        if ($PSBoundParameters.ContainsKey('Type')) {
-            $setParams.Type = $Type 
+        if ($args[3]) {
+            $setParams.Type = $args[3]
         }
         Set-ItemProperty @setParams
     }
 
-    Start-Tweak -ComputerName $ComputerName -Code $code
+    $strtTweakParams = @{
+        ComputerName = $ComputerName
+        Code         = $code
+        Arguments    = @($KeyPath, $Name, $Value, $Type)
+        Credential   = $Credential
+        Asynchronous = $Asynchronous.IsPresent
+    }
+
+    Start-Tweak @strtTweakParams
 }
