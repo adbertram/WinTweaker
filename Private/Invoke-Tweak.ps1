@@ -1,4 +1,4 @@
-function Start-Tweak {
+function Invoke-Tweak {
     [CmdletBinding(SupportsShouldProcess)]
     param
     (

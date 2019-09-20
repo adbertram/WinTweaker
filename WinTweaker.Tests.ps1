@@ -16,7 +16,7 @@ InModuleScope 'WinTweaker' {
 
     }
 
-    describe 'Start-Tweak' -Tag 'PrivateFunction' {
+    describe 'Invoke-Tweak' -Tag 'PrivateFunction' {
 
         #region Mocks
         mock 'Get-CallingFunctionName' { 'callingfunctionname' }
@@ -29,7 +29,7 @@ InModuleScope 'WinTweaker' {
                 $params = @{
                     Code = { foo }
                 }
-                Start-Tweak @params
+                Invoke-Tweak @params
 
                 it 'calls Invoke-Command with the expected parameters' {
                 
@@ -57,7 +57,7 @@ InModuleScope 'WinTweaker' {
                     ComputerName = 'REMOTE'
                     Credential   = $credential
                 }
-                Start-Tweak @params
+                Invoke-Tweak @params
 
                 it 'calls Invoke-Command with the expected parameters' {
                     
@@ -82,7 +82,7 @@ InModuleScope 'WinTweaker' {
                     Code = { foo }
                     Wait = $true
                 }
-                Start-Tweak @params
+                Invoke-Tweak @params
 
                 it 'calls Invoke-Command with the expected parameters' {
                 
@@ -107,7 +107,7 @@ InModuleScope 'WinTweaker' {
                     Code      = { foo }
                     Arguments = @('arg1', 'arg2')
                 }
-                Start-Tweak @params
+                Invoke-Tweak @params
 
                 it 'calls Invoke-Command with the expected parameters' {
                 
@@ -134,7 +134,7 @@ InModuleScope 'WinTweaker' {
                     Code         = { foo }
                     ComputerName = 'REMOTE'
                 }
-                Start-Tweak @params
+                Invoke-Tweak @params
 
                 it 'calls Invoke-Command with the expected parameters' {
                 
@@ -161,7 +161,7 @@ InModuleScope 'WinTweaker' {
                     ComputerName = 'REMOTE'
                     Credential   = $credential
                 }
-                Start-Tweak @params
+                Invoke-Tweak @params
 
                 it 'calls Invoke-Command with the expected parameters' {
                 
@@ -184,17 +184,17 @@ InModuleScope 'WinTweaker' {
 
     describe 'Enable-ShutdownTracker' -Tag 'Tweak' {
         #region Mocks
-        mock 'Start-Tweak'        
+        mock 'Invoke-Tweak'        
         #endregion
 
         context 'Local computer' {
 
             $result = Enable-ShutdownTracker
 
-            it 'calls Start-Tweak' {
+            it 'calls Invoke-Tweak' {
 
                 $assMParams = @{
-                    CommandName = 'Start-Tweak'
+                    CommandName = 'Invoke-Tweak'
                     Times       = 1
                     Exactly     = $true
                 }
@@ -211,10 +211,10 @@ InModuleScope 'WinTweaker' {
 
                 $result = Enable-ShutdownTracker -ComputerName 'X' -Credential $credential
 
-                it 'calls Start-Tweak' {
+                it 'calls Invoke-Tweak' {
 
                     $assMParams = @{
-                        CommandName = 'Start-Tweak'
+                        CommandName = 'Invoke-Tweak'
                         Times       = 1
                         Exactly     = $true
                     }
@@ -227,10 +227,10 @@ InModuleScope 'WinTweaker' {
 
                 $result = Enable-ShutdownTracker -ComputerName 'X'
 
-                it 'calls Start-Tweak' {
+                it 'calls Invoke-Tweak' {
 
                     $assMParams = @{
-                        CommandName = 'Start-Tweak'
+                        CommandName = 'Invoke-Tweak'
                         Times       = 1
                         Exactly     = $true
                     }

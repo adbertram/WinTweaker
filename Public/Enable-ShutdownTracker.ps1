@@ -22,6 +22,6 @@ function Enable-ShutdownTracker {
     }
 
     $startTweakParams = $PSBoundParameters + @{ Code = $code }
-    Start-Tweak @startTweakParams
+    Invoke-Tweak @startTweakParams
 
 }
