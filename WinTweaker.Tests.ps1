@@ -185,7 +185,7 @@ InModuleScope 'WinTweaker' {
     describe 'Set-RegistryValue' {
 
         #region Mocks
-        mock 'Start-Tweak'
+        mock 'Set-ItemProperty'
         #endregion
 
         context 'Local computer execution' {
@@ -196,16 +196,16 @@ InModuleScope 'WinTweaker' {
             }
             Set-RegistryValue @params
 
-            it 'calls Start-Tweak with the expected parameters' {
+            it 'calls Set-ItemProperty with the expected parameters' {
                 
                 $assMParams = @{
-                    CommandName     = 'Start-Tweak'
+                    CommandName     = 'Set-ItemProperty'
                     Times           = 1
                     Exactly         = $true
                     ExclusiveFilter = {
-                        $PSBoundParameters.ComputerName -eq $null -and
-                        (-not (diff $PSBoundParameters.Arguments @('HKLM:\Software', 'keyname', 'keyvalue', ''))) -and
-                        $PSBoundParameters.Asynchronous -eq $false
+                        $PSBoundParameters.Path -eq 'HKLM:\Software' -and
+                        $PSBoundParameters.Name -eq 'keyname' -and
+                        $PSBoundParameters.Value -eq 'keyvalue'
                     }
                 }
                 Assert-MockCalled @assMParams
@@ -216,7 +216,7 @@ InModuleScope 'WinTweaker' {
     describe 'Remove-RegistryValue' {
 
         #region Mocks
-        mock 'Start-Tweak'
+        mock 'Remove-ItemProperty'
         #endregion
 
         context 'Local computer execution' {
@@ -226,16 +226,15 @@ InModuleScope 'WinTweaker' {
             }
             Remove-RegistryValue @params
 
-            it 'calls Start-Tweak with the expected parameters' {
+            it 'calls Remove-ItemProperty with the expected parameters' {
                 
                 $assMParams = @{
-                    CommandName     = 'Start-Tweak'
+                    CommandName     = 'Remove-ItemProperty'
                     Times           = 1
                     Exactly         = $true
                     ExclusiveFilter = {
-                        $PSBoundParameters.ComputerName -eq $null -and
-                        (-not (diff $PSBoundParameters.Arguments @('HKLM:\Software', 'keyname'))) -and
-                        $PSBoundParameters.Asynchronous -eq $false
+                        $PSBoundParameters.Path -eq 'HKLM:\Software' -and
+                        $PSBoundParameters.Name -eq 'keyname'
                     }
                 }
                 Assert-MockCalled @assMParams

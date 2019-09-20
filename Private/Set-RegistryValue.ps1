@@ -2,14 +2,6 @@ function Set-RegistryValue {
     [CmdletBinding()]
     param
     (
-        [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [string[]]$ComputerName,
-
-        [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [pscredential]$Credential,
-
         [Parameter(Mandatory)]
         [ValidateDrive('HKLM', 'HKCU', 'HKU', 'HKCR')]
         [ValidateNotNullOrEmpty()]
@@ -26,37 +18,21 @@ function Set-RegistryValue {
         [Parameter()]
         [ValidateSet('Binary', 'DWord', 'ExpandString', 'MultiString', 'QWord', 'String')]
         [ValidateNotNullOrEmpty()]
-        [string]$Type,
-
-        [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [switch]$Asynchronous
+        [string]$Type
     )
 
     $ErrorActionPreference = 'Stop'
 
-    $code = {
-        if (-not (Test-Path -Path $args[0])) {
-            $null = New-Item -Path $args[0] -Force
-        }
-        $setParams = @{
-            Path  = $args[0]
-            Name  = $args[1]
-            Value = $args[2]
-        }
-        if ($args[3]) {
-            $setParams.Type = $args[3]
-        }
-        Set-ItemProperty @setParams
+    if (-not (Test-Path -Path $KeyPath)) {
+        $null = New-Item -Path $KeyPath -Force
     }
-
-    $strtTweakParams = @{
-        ComputerName = $ComputerName
-        Code         = $code
-        Arguments    = @($KeyPath, $Name, $Value, $Type)
-        Credential   = $Credential
-        Asynchronous = $Asynchronous.IsPresent
+    $setParams = @{
+        Path  = $KeyPath
+        Name  = $Name
+        Value = $Value
     }
-
-    Start-Tweak @strtTweakParams
+    if ($Type) {
+        $setParams.Type = $Type
+    }
+    Set-ItemProperty @setParams
 }
