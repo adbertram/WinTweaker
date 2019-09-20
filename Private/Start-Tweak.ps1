@@ -14,7 +14,7 @@ function Start-Tweak {
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
-        [switch]$Asynchronous,
+        [switch]$Wait,
 
         [Parameter()]
         [object[]]$Arguments
@@ -22,7 +22,8 @@ function Start-Tweak {
 
     $ErrorActionPreference = 'Stop'
 
-    Write-Verbose -Message "Running tweak $(Get-CallingFunctionName -CallStack (Get-PSCallStack))..."
+    $tweakName = Get-CallingFunctionName -CallStack (Get-PSCallStack)
+    Write-Verbose -Message "Running tweak $tweakName..."
 
     $icmParams = @{
         ScriptBlock = $Code
@@ -33,8 +34,9 @@ function Start-Tweak {
     }
     $icmParams.ComputerName = $ComputerName
 
-    if (-not $Asynchronous.IsPresent) {
+    if (-not $Wait.IsPresent) {
         $icmParams.AsJob = $true
+        $icmParams.JobName = "WinTweaker: $ComputerName - $tweakName"
     }
 
     if ($Credential) {

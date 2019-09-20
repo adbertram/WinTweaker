@@ -79,8 +79,8 @@ InModuleScope 'WinTweaker' {
             context 'Asynchronous' {
 
                 $params = @{
-                    Code         = { foo }
-                    Asynchronous = $true
+                    Code = { foo }
+                    Wait = $true
                 }
                 Start-Tweak @params
 
