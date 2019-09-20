@@ -18,7 +18,11 @@ function Enable-ShutdownTracker {
     $ErrorActionPreference = 'Stop'
 
     $code = {
-        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Reliability" -Name "ShutdownReasonOn"
+        if (-not (Test-Path -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Reliability")) {
+            Write-Warning -Message "Enable-ShutdownTracker: Required registry key does not exist."
+        } else {
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Reliability" -Name "ShutdownReasonOn"
+        }
     }
 
     $startTweakParams = $PSBoundParameters + @{ Code = $code }
