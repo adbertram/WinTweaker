@@ -1,7 +1,7 @@
 Import-Module "$PSScriptRoot\WinTweaker.psd1" -Force
 
 InModuleScope 'WinTweaker' {
-    describe 'Get-CallingFunctionName' {
+    describe 'Get-CallingFunctionName' -Tag 'PrivateFunction' {
         #region Mocks
         ## This is better but I'm too lazy to figure out how to populate property values to check
         # $callStack = 0..1 | foreach { New-MockObject -Type 'System.Management.Automation.CallStackFrame' }
@@ -16,7 +16,7 @@ InModuleScope 'WinTweaker' {
 
     }
 
-    describe 'Start-Tweak' {
+    describe 'Start-Tweak' -Tag 'PrivateFunction' {
 
         #region Mocks
         mock 'Get-CallingFunctionName' { 'callingfunctionname' }
@@ -182,62 +182,60 @@ InModuleScope 'WinTweaker' {
         }
     }
 
-    describe 'Set-RegistryValue' {
-
+    describe 'Enable-ShutdownTracker' -Tag 'Tweak' {
         #region Mocks
-        mock 'Set-ItemProperty'
+        mock 'Start-Tweak'        
         #endregion
 
-        context 'Local computer execution' {
-            $params = @{
-                KeyPath = 'HKLM:\Software'
-                Name    = 'keyname'
-                Value   = 'keyvalue'
-            }
-            Set-RegistryValue @params
+        context 'Local computer' {
 
-            it 'calls Set-ItemProperty with the expected parameters' {
-                
+            $result = Enable-ShutdownTracker
+
+            it 'calls Start-Tweak' {
+
                 $assMParams = @{
-                    CommandName     = 'Set-ItemProperty'
-                    Times           = 1
-                    Exactly         = $true
-                    ExclusiveFilter = {
-                        $PSBoundParameters.Path -eq 'HKLM:\Software' -and
-                        $PSBoundParameters.Name -eq 'keyname' -and
-                        $PSBoundParameters.Value -eq 'keyvalue'
-                    }
+                    CommandName = 'Start-Tweak'
+                    Times       = 1
+                    Exactly     = $true
                 }
                 Assert-MockCalled @assMParams
+
             }
         }
-    }
 
-    describe 'Remove-RegistryValue' {
+        context 'Remote computer - no alternate credential' {
 
-        #region Mocks
-        mock 'Remove-ItemProperty'
-        #endregion
+            $result = Enable-ShutdownTracker -ComputerName 'X'
 
-        context 'Local computer execution' {
-            $params = @{
-                KeyPath = 'HKLM:\Software'
-                Name    = 'keyname'
-            }
-            Remove-RegistryValue @params
+            it 'calls Start-Tweak' {
 
-            it 'calls Remove-ItemProperty with the expected parameters' {
-                
                 $assMParams = @{
-                    CommandName     = 'Remove-ItemProperty'
-                    Times           = 1
-                    Exactly         = $true
-                    ExclusiveFilter = {
-                        $PSBoundParameters.Path -eq 'HKLM:\Software' -and
-                        $PSBoundParameters.Name -eq 'keyname'
-                    }
+                    CommandName = 'Start-Tweak'
+                    Times       = 1
+                    Exactly     = $true
                 }
                 Assert-MockCalled @assMParams
+
+            }
+
+        }
+
+        context 'Remote computer - alternate credential' {
+
+            $password = ConvertTo-SecureString 'MySecretPassword' -AsPlainText -Force
+            $credential = New-Object System.Management.Automation.PSCredential ('root', $password)
+
+            $result = Enable-ShutdownTracker -ComputerName 'X' -Credential $credential
+
+            it 'calls Start-Tweak' {
+
+                $assMParams = @{
+                    CommandName = 'Start-Tweak'
+                    Times       = 1
+                    Exactly     = $true
+                }
+                Assert-MockCalled @assMParams
+
             }
         }
     }
