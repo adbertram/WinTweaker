@@ -12,7 +12,7 @@ function Enable-ShutdownTracker {
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
-        [switch]$Asynchronous
+        [switch]$Wait
     )
 
     $ErrorActionPreference = 'Stop'
