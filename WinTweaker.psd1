@@ -1,6 +1,6 @@
 @{
     RootModule        = 'WinTweaker.psm1'
-    ModuleVersion     = '*'
+    ModuleVersion     = '1.0'
     GUID              = 'a8e33cfd-4dc6-493b-bdcf-26df80f2c1d5'
     Author            = 'Adam Bertram'
     CompanyName       = 'Adam the Automator, LLC'
