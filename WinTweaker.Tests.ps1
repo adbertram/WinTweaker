@@ -181,9 +181,7 @@ InModuleScope 'WinTweaker' {
             }
         }
     }
-}
 
-InModuleScope 'WinTweaker' {
     describe 'Set-RegistryValue' {
 
         #region Mocks
@@ -207,6 +205,36 @@ InModuleScope 'WinTweaker' {
                     ExclusiveFilter = {
                         $PSBoundParameters.ComputerName -eq $null -and
                         (-not (diff $PSBoundParameters.Arguments @('HKLM:\Software', 'keyname', 'keyvalue', ''))) -and
+                        $PSBoundParameters.Asynchronous -eq $false
+                    }
+                }
+                Assert-MockCalled @assMParams
+            }
+        }
+    }
+
+    describe 'Remove-RegistryValue' {
+
+        #region Mocks
+        mock 'Start-Tweak'
+        #endregion
+
+        context 'Local computer execution' {
+            $params = @{
+                KeyPath = 'HKLM:\Software'
+                Name    = 'keyname'
+            }
+            Remove-RegistryValue @params
+
+            it 'calls Start-Tweak with the expected parameters' {
+                
+                $assMParams = @{
+                    CommandName     = 'Start-Tweak'
+                    Times           = 1
+                    Exactly         = $true
+                    ExclusiveFilter = {
+                        $PSBoundParameters.ComputerName -eq $null -and
+                        (-not (diff $PSBoundParameters.Arguments @('HKLM:\Software', 'keyname'))) -and
                         $PSBoundParameters.Asynchronous -eq $false
                     }
                 }
