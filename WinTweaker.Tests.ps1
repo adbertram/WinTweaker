@@ -203,38 +203,40 @@ InModuleScope 'WinTweaker' {
             }
         }
 
-        context 'Remote computer - no alternate credential' {
+        context 'Remote computer' {
+            context 'alternate credential' {
 
-            $result = Enable-ShutdownTracker -ComputerName 'X'
+                $password = ConvertTo-SecureString 'MySecretPassword' -AsPlainText -Force
+                $credential = New-Object System.Management.Automation.PSCredential ('root', $password)
 
-            it 'calls Start-Tweak' {
+                $result = Enable-ShutdownTracker -ComputerName 'X' -Credential $credential
 
-                $assMParams = @{
-                    CommandName = 'Start-Tweak'
-                    Times       = 1
-                    Exactly     = $true
+                it 'calls Start-Tweak' {
+
+                    $assMParams = @{
+                        CommandName = 'Start-Tweak'
+                        Times       = 1
+                        Exactly     = $true
+                    }
+                    Assert-MockCalled @assMParams
+
                 }
-                Assert-MockCalled @assMParams
-
             }
 
-        }
+            context 'no alternate credential' {
 
-        context 'Remote computer - alternate credential' {
+                $result = Enable-ShutdownTracker -ComputerName 'X'
 
-            $password = ConvertTo-SecureString 'MySecretPassword' -AsPlainText -Force
-            $credential = New-Object System.Management.Automation.PSCredential ('root', $password)
+                it 'calls Start-Tweak' {
 
-            $result = Enable-ShutdownTracker -ComputerName 'X' -Credential $credential
+                    $assMParams = @{
+                        CommandName = 'Start-Tweak'
+                        Times       = 1
+                        Exactly     = $true
+                    }
+                    Assert-MockCalled @assMParams
 
-            it 'calls Start-Tweak' {
-
-                $assMParams = @{
-                    CommandName = 'Start-Tweak'
-                    Times       = 1
-                    Exactly     = $true
                 }
-                Assert-MockCalled @assMParams
 
             }
         }
